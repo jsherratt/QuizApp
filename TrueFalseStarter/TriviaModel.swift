@@ -11,6 +11,9 @@ import GameKit
 
 class Trivia {
     
+    //-----------------------
+    //MARK: Variables
+    //-----------------------
     var question: String
     var option1:String
     var option2:String
@@ -18,6 +21,10 @@ class Trivia {
     var option4:String
     var answer:String
     
+    
+    //-----------------------
+    //MARK: Init
+    //-----------------------
     init(question: String, option1: String, option2: String, option3: String, option4: String, answer: String) {
         
         self.question = question
@@ -29,6 +36,9 @@ class Trivia {
     }
 }
 
+//-----------------------
+//MARK: Questions
+//-----------------------
 let question1 = Trivia(question: "What is the closest planet to the Sun?", option1: "Venus", option2: "Mercury", option3: "Earth", option4: "Mars", answer: "Mercury")
 
 let question2 = Trivia(question: "What planet is known as the red planet?", option1: "Mars", option2: "Jupiter", option3: "Neptune", option4: "Saturn", answer: "Mars")
