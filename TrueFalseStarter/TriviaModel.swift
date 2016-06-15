@@ -21,7 +21,6 @@ class Trivia {
     var option4:String
     var answer:String
     
-    
     //-----------------------
     //MARK: Init
     //-----------------------
