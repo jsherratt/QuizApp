@@ -13,16 +13,30 @@ import AudioToolbox
 class ViewController: UIViewController {
     
     //-----------------------
+    //TODO: Todo
+    //-----------------------
+    
+    //Add a 15 second timer to each question
+    
+    //-----------------------
     //MARK: Variables
     //-----------------------
     let questionsPerRound = 4
     var questionsAsked = 0
     var correctQuestions = 0
-    var indexOfSelectedQuestion = 0
+    var indexOfSelectedQuestion: UInt32 = 0
     var shuffledArray: [Trivia] = []
     var btnArray: [UIButton] = []
     
-    var gameSound: SystemSoundID = 0
+    //Sounds
+    var startSound: SystemSoundID = 0
+    var correctSound: SystemSoundID = 1
+    var incorrectSound: SystemSoundID = 2
+    
+    //Timer
+    var timer = NSTimer()
+    var seconds = 15
+    var timerIsRunning = false
     
     //-----------------------
     //MARK: Outlets
@@ -34,6 +48,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var option3Btn: UIButton!
     @IBOutlet weak var option4Btn: UIButton!
     @IBOutlet weak var playBtn: UIButton!
+    @IBOutlet weak var timerLabel: UILabel!
     
     
     //-----------------------
@@ -49,8 +64,8 @@ class ViewController: UIViewController {
         btnArray.append(option4Btn)
         
         //Set up game
-        //loadGameStartSound()
-        playGameStartSound()
+        loadSounds()
+        //playGameSound(startSound)
         displayQuestion()
     }
     
@@ -93,11 +108,11 @@ class ViewController: UIViewController {
         //Shuffles the array of questions randomly
         shuffledArray =  GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(questionArray) as! [Trivia]
         
-        //Random index from the shuffled array
-        indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextIntWithUpperBound(shuffledArray.count)
+        //Random index from the shuffled array never repeating the same index twice
+        indexOfSelectedQuestion = randomSelectedIndex()
         
         //Display text of question in the question label
-        let selectedQuestion = shuffledArray[indexOfSelectedQuestion]
+        let selectedQuestion = shuffledArray[Int(indexOfSelectedQuestion)]
         questionLabel.text = selectedQuestion.question
         
         //Set the title of each btn with the options from the select question
@@ -108,7 +123,11 @@ class ViewController: UIViewController {
         
         //Set answer label with empty string. Disable play btn
         answerLabel.text = ""
-        playBtn.enabled = false
+        playBtn.enabled = true
+        
+        //Start the timer
+        resetTimer()
+        startTimer()
     }
     
     func checkAnswerOfQuestion(button: UIButton) {
@@ -122,12 +141,15 @@ class ViewController: UIViewController {
         //Enable the next question btn
         playBtn.enabled = true
         
-        let selectedQuestion = shuffledArray[indexOfSelectedQuestion]
+        let selectedQuestion = shuffledArray[Int(indexOfSelectedQuestion)]
         let correctAnswer = selectedQuestion.answer
         
         //Check the title of the btn and see if it matches the correct answer. If correct, increment correct questions counter and change answer label to display correct.
         //If incorrect change answer label to display the correct answer
         if button.currentTitle == correctAnswer {
+            
+            timer.invalidate()
+            playGameSound(correctSound)
             
             correctQuestions += 1
             
@@ -136,6 +158,8 @@ class ViewController: UIViewController {
             
         }else {
             
+            timer.invalidate()
+            playGameSound(incorrectSound)
             answerLabel.textColor = UIColor(colorLiteralRed: 218/255, green: 75/255, blue: 75/255, alpha: 1.0)
             answerLabel.text = "Sorry\nthe correct answer is \(correctAnswer)"
         }
@@ -200,6 +224,59 @@ class ViewController: UIViewController {
         nextRound()
     }
     
+    func randomSelectedIndex() -> UInt32 {
+        
+        var randomNumber = arc4random_uniform(UInt32(shuffledArray.count))
+        
+        while indexOfSelectedQuestion == randomNumber {
+            randomNumber = arc4random_uniform(UInt32(shuffledArray.count))
+        }
+        indexOfSelectedQuestion = randomNumber
+        
+        return randomNumber
+    }
+    
+    //-----------------------
+    //MARK: Timer
+    //-----------------------
+    func startTimer() {
+        
+        if timerIsRunning == false {
+            
+            timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(ViewController.countdown), userInfo: nil, repeats: true)
+            timerIsRunning = true
+        }
+    }
+    
+    func countdown() {
+        
+        let selectedQuestion = shuffledArray[Int(indexOfSelectedQuestion)]
+        let correctAnswer = selectedQuestion.answer
+        
+        seconds = seconds - 1
+        
+        timerLabel.text = "\(seconds)"
+        
+        if seconds == 0 {
+            
+            //Invalidate the timer
+            timer.invalidate()
+            
+            // Increment the questions asked counter
+            questionsAsked += 1
+            
+            //Disable all btns
+            disableAllBtns()
+            
+            //Enable the next question btn
+            playBtn.enabled = true
+            
+            //Play incorrect sound and show correct answer
+            playGameSound(incorrectSound)
+            answerLabel.textColor = UIColor(colorLiteralRed: 218/255, green: 75/255, blue: 75/255, alpha: 1.0)
+            answerLabel.text = "Sorry\nthe correct answer is \(correctAnswer)"
+        }
+    }
     
     //-----------------------
     //MARK: Helper Functions
@@ -232,6 +309,22 @@ class ViewController: UIViewController {
         }
     }
     
+    func disableAllBtns() {
+        
+        for btn in btnArray {
+            
+            btn.enabled = false
+        }
+    }
+    
+    func resetTimer() {
+        
+        //Reset the seconds and timer label
+        seconds = 15
+        timerLabel.text = "\(seconds)"
+        timerIsRunning = false
+    }
+    
     func loadNextRoundWithDelay(seconds seconds: Int) {
         
         //Converts a delay in seconds to nanoseconds as signed 64 bit integer
@@ -246,20 +339,46 @@ class ViewController: UIViewController {
         }
     }
     
-    func loadGameStartSound() {
+    func loadSounds() {
         
-        //Load games sounds
-        let pathToSoundFile = NSBundle.mainBundle().pathForResource("GameSound", ofType: "wav")
-        let soundURL = NSURL(fileURLWithPath: pathToSoundFile!)
-        AudioServicesCreateSystemSoundID(soundURL, &gameSound)
+        loadGameStartSound("StartSound")
+        loadGameCorrectSound("CorrectSound")
+        loadGameIncorrectSound("IncorrectSound")
     }
     
-    func playGameStartSound() {
+    func loadGameStartSound(soundName: String) {
+        
+        //Load start sound
+        let pathToSoundFile = NSBundle.mainBundle().pathForResource(soundName, ofType: "wav")
+        let soundPath = NSURL(fileURLWithPath: pathToSoundFile!)
+        AudioServicesCreateSystemSoundID(soundPath, &startSound)
+    }
+    
+    func loadGameCorrectSound(soundName: String) {
+        
+        //Load correct sound
+        let pathToSoundFile = NSBundle.mainBundle().pathForResource(soundName, ofType: "wav")
+        let soundPath = NSURL(fileURLWithPath: pathToSoundFile!)
+        AudioServicesCreateSystemSoundID(soundPath, &correctSound)
+    }
+    
+    func loadGameIncorrectSound(soundName: String) {
+        
+        //Load incorrect sound
+        let pathToSoundFile = NSBundle.mainBundle().pathForResource(soundName, ofType: "wav")
+        let soundPath = NSURL(fileURLWithPath: pathToSoundFile!)
+        AudioServicesCreateSystemSoundID(soundPath, &incorrectSound)
+    }
+    
+    func playGameSound(sound: SystemSoundID) {
         
         //Plays the start game sound
-        AudioServicesPlaySystemSound(gameSound)
+        AudioServicesPlaySystemSound(sound)
     }
     
+    //-----------------------
+    //MARK: Extra
+    //-----------------------
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }

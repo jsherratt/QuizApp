@@ -126,6 +126,12 @@
                                 <color key="textColor" red="0.96078431369999995" green="0.96078431369999995" blue="0.96078431369999995" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="15" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pwt-XL-tEG">
+                                <rect key="frame" x="542" y="28" width="18" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.08235294118" green="0.1137254902" blue="0.16078431369999999" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
@@ -136,6 +142,7 @@
                             <constraint firstItem="J1V-MS-ECi" firstAttribute="top" secondItem="I3V-ih-1Ky" secondAttribute="bottom" constant="60" id="99q-O2-7ms"/>
                             <constraint firstAttribute="trailingMargin" secondItem="I3V-ih-1Ky" secondAttribute="trailing" constant="20" id="9jz-gE-cjH"/>
                             <constraint firstAttribute="trailingMargin" secondItem="lT9-z4-iGc" secondAttribute="trailing" constant="20" id="F2K-Sf-RWe"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="pwt-XL-tEG" secondAttribute="trailing" constant="20" id="HEb-Ct-zqm"/>
                             <constraint firstItem="I3V-ih-1Ky" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="20" id="Hxz-ej-KSX"/>
                             <constraint firstItem="i4h-cL-m8f" firstAttribute="top" secondItem="AS4-HX-g9f" secondAttribute="bottom" constant="30" id="J6H-fy-mzu"/>
                             <constraint firstItem="AS4-HX-g9f" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="20" id="K5h-fK-rCR"/>
@@ -148,6 +155,7 @@
                             <constraint firstItem="lT9-z4-iGc" firstAttribute="top" secondItem="i4h-cL-m8f" secondAttribute="bottom" constant="30" id="WQN-I9-QfH"/>
                             <constraint firstItem="AS4-HX-g9f" firstAttribute="top" secondItem="J1V-MS-ECi" secondAttribute="bottom" constant="30" id="WRG-dW-dvu"/>
                             <constraint firstItem="HRm-hx-gHw" firstAttribute="top" secondItem="I3V-ih-1Ky" secondAttribute="bottom" constant="8" id="bLg-17-ZMX"/>
+                            <constraint firstItem="pwt-XL-tEG" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" id="fsm-c3-bHf"/>
                             <constraint firstAttribute="trailingMargin" secondItem="i4h-cL-m8f" secondAttribute="trailing" constant="20" id="gvE-YR-7Bo"/>
                             <constraint firstItem="J1V-MS-ECi" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="20" id="ml8-zo-JOW"/>
                             <constraint firstItem="AS4-HX-g9f" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="mnc-c8-kWp"/>
@@ -166,6 +174,7 @@
                         <outlet property="option4Btn" destination="lT9-z4-iGc" id="kLY-v3-QDw"/>
                         <outlet property="playBtn" destination="K17-uy-MvB" id="B5V-Sd-VJm"/>
                         <outlet property="questionLabel" destination="I3V-ih-1Ky" id="Q8i-45-yWv"/>
+                        <outlet property="timerLabel" destination="pwt-XL-tEG" id="IYt-Nu-LUR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
