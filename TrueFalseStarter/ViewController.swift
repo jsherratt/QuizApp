@@ -30,6 +30,8 @@ class ViewController: UIViewController {
     var seconds = 15
     var timerIsRunning = false
     
+    let array = Questions()
+    
     //-----------------------
     //MARK: Outlets
     //-----------------------
@@ -115,7 +117,7 @@ class ViewController: UIViewController {
         }
         
         //Display text of question in the question label
-        let selectedQuestion = questionArray[indexArray.last!]
+        let selectedQuestion = array.questionArray[indexArray.last!]
         questionLabel.text = selectedQuestion.question
         
         //Set the title of each btn with the options from the select question
@@ -144,7 +146,7 @@ class ViewController: UIViewController {
         //Enable the next question btn
         playBtn.enabled = true
         
-        let selectedQuestion = questionArray[indexArray.last!]
+        let selectedQuestion = array.questionArray[indexArray.last!]
         let correctAnswer = selectedQuestion.answer
         
         //Check the title of the btn and see if it matches the correct answer. If correct, increment correct questions counter and change answer label to display correct.
@@ -246,7 +248,7 @@ class ViewController: UIViewController {
     
     func countdown() {
         
-        let selectedQuestion = questionArray[indexArray.last!]
+        let selectedQuestion = array.questionArray[indexArray.last!]
         let correctAnswer = selectedQuestion.answer
         
         //Decremet seconds by 1
@@ -287,7 +289,7 @@ class ViewController: UIViewController {
         //Repeat random number until the random number is not contained in the index array or is not equal to the previous index
         repeat {
             
-            randomNumber = GKRandomSource.sharedRandom().nextIntWithUpperBound(questionArray.count)
+            randomNumber = GKRandomSource.sharedRandom().nextIntWithUpperBound(array.questionArray.count)
             
         }while indexArray.contains(indexOfSelectedQuestion) && randomNumber == indexOfSelectedQuestion
         
