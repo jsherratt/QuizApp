@@ -26,7 +26,7 @@ class ViewController: UIViewController {
     var currentSoundID: SystemSoundID = 0
     
     //Timer
-    var timer = NSTimer()
+    var timer = Timer()
     var seconds = 15
     var timerIsRunning = false
     
@@ -61,8 +61,8 @@ class ViewController: UIViewController {
         roundBtnCorners()
         
         //Set up game
-        loadGameSound("StartSound", soundID: &currentSoundID)
-        playGameSound(currentSoundID)
+        loadGameSound(soundName: "StartSound", soundID: &currentSoundID)
+        playGameSound(sound: currentSoundID)
         displayQuestion()
     }
     
@@ -71,7 +71,7 @@ class ViewController: UIViewController {
     //-----------------------
     @IBAction func checkAnswer(sender: UIButton) {
         
-        checkAnswerOfQuestion(sender)
+        checkAnswerOfQuestion(button: sender)
     }
     
     @IBAction func playBtn(sender: UIButton) {
@@ -121,14 +121,14 @@ class ViewController: UIViewController {
         questionLabel.text = selectedQuestion.question
         
         //Set the title of each btn with the options from the select question
-        option1Btn.setTitle(selectedQuestion.option1, forState: .Normal)
-        option2Btn.setTitle(selectedQuestion.option2, forState: .Normal)
-        option3Btn.setTitle(selectedQuestion.option3, forState: .Normal)
-        option4Btn.setTitle(selectedQuestion.option4, forState: .Normal)
+        option1Btn.setTitle(selectedQuestion.option1, for: .normal)
+        option2Btn.setTitle(selectedQuestion.option2, for: .normal)
+        option3Btn.setTitle(selectedQuestion.option3, for: .normal)
+        option4Btn.setTitle(selectedQuestion.option4, for: .normal)
         
         //Set answer label with empty string. Disable play btn
         answerLabel.text = ""
-        playBtn.enabled = false
+        playBtn.isEnabled = false
         
         //Start the timer
         resetTimer()
@@ -141,10 +141,10 @@ class ViewController: UIViewController {
         questionsAsked += 1
         
         //Disable btns other than the selected one
-        disableBtns(button.tag)
+        disableBtns(tag: button.tag)
         
         //Enable the next question btn
-        playBtn.enabled = true
+        playBtn.isEnabled = true
         
         let selectedQuestion = array.questionArray[indexArray.last!]
         let correctAnswer = selectedQuestion.answer
@@ -154,8 +154,8 @@ class ViewController: UIViewController {
         if button.currentTitle == correctAnswer {
             
             timer.invalidate()
-            loadGameSound("CorrectSound", soundID: &currentSoundID)
-            playGameSound(currentSoundID)
+            loadGameSound(soundName: "CorrectSound", soundID: &currentSoundID)
+            playGameSound(sound: currentSoundID)
             
             correctQuestions += 1
             
@@ -165,8 +165,8 @@ class ViewController: UIViewController {
         }else {
             
             timer.invalidate()
-            loadGameSound("IncorrectSound", soundID: &currentSoundID)
-            playGameSound(currentSoundID)
+            loadGameSound(soundName: "IncorrectSound", soundID: &currentSoundID)
+            playGameSound(sound: currentSoundID)
             answerLabel.textColor = UIColor(colorLiteralRed: 218/255, green: 75/255, blue: 75/255, alpha: 1.0)
             answerLabel.text = "Sorry the correct answer is\n \(correctAnswer)"
         }
@@ -175,14 +175,14 @@ class ViewController: UIViewController {
     func displayScore() {
         
         //Hide the answer buttons
-        option1Btn.hidden = true
-        option2Btn.hidden = true
-        option3Btn.hidden = true
-        option4Btn.hidden = true
+        option1Btn.isHidden = true
+        option2Btn.isHidden = true
+        option3Btn.isHidden = true
+        option4Btn.isHidden = true
         
         //Set play btn title to play again
-        playBtn.setTitle("Play Again", forState: .Normal)
-        playBtn.enabled = true
+        playBtn.setTitle("Play Again", for: .normal)
+        playBtn.isEnabled = true
         
         //Display text based on the player score
         if correctQuestions == questionsAsked {
@@ -219,13 +219,13 @@ class ViewController: UIViewController {
     func playAgain() {
         
         //Show the answer buttons
-        option1Btn.hidden = false
-        option2Btn.hidden = false
-        option3Btn.hidden = false
-        option4Btn.hidden = false
+        option1Btn.isHidden = false
+        option2Btn.isHidden = false
+        option3Btn.isHidden = false
+        option4Btn.isHidden = false
         
         //Set play btn title to next
-        playBtn.setTitle("Next", forState: .Normal)
+        playBtn.setTitle("Next", for: .normal)
         
         //Reset the score and move on to the next round
         questionsAsked = 0
@@ -241,7 +241,7 @@ class ViewController: UIViewController {
         
         if timerIsRunning == false {
             
-            timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(ViewController.countdown), userInfo: nil, repeats: true)
+            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(ViewController.countdown), userInfo: nil, repeats: true)
             timerIsRunning = true
         }
     }
@@ -269,11 +269,11 @@ class ViewController: UIViewController {
             disableAllBtns()
             
             //Enable the next question btn
-            playBtn.enabled = true
+            playBtn.isEnabled = true
             
             //Play incorrect sound and show correct answer
-            loadGameSound("IncorrectSound", soundID: &currentSoundID)
-            playGameSound(currentSoundID)
+            loadGameSound(soundName: "IncorrectSound", soundID: &currentSoundID)
+            playGameSound(sound: currentSoundID)
             answerLabel.textColor = UIColor(colorLiteralRed: 218/255, green: 75/255, blue: 75/255, alpha: 1.0)
             answerLabel.text = "Sorry\nthe correct answer is \(correctAnswer)"
         }
@@ -282,20 +282,19 @@ class ViewController: UIViewController {
     //-----------------------
     //MARK: Helper Functions
     //-----------------------
-    func getRandomIndex() -> Int{
+    func getRandomIndex() {
         
         var randomNumber = 0
         
         //Repeat random number until the random number is not contained in the index array or is not equal to the previous index
         repeat {
             
-            randomNumber = GKRandomSource.sharedRandom().nextIntWithUpperBound(array.questionArray.count)
+            randomNumber = GKRandomSource.sharedRandom().nextInt(upperBound: array.questionArray.count)
             
         }while indexArray.contains(indexOfSelectedQuestion) && randomNumber == indexOfSelectedQuestion
         
         indexOfSelectedQuestion = randomNumber
         
-        return randomNumber
     }
     
     func disableBtns(tag: Int) {
@@ -305,13 +304,13 @@ class ViewController: UIViewController {
             //Enable player selected option btn and disable interaction
             if btn.tag == tag {
                 
-                btn.enabled = true
-                btn.userInteractionEnabled = false
+                btn.isEnabled = true
+                btn.isUserInteractionEnabled = false
                 
             }else {
                 
                 //Disable other options btns
-                btn.enabled = false
+                btn.isEnabled = false
             }
         }
     }
@@ -321,8 +320,8 @@ class ViewController: UIViewController {
         for btn in btnArray {
             
             //Enable all btns and user interaction
-            btn.enabled = true
-            btn.userInteractionEnabled = true
+            btn.isEnabled = true
+            btn.isUserInteractionEnabled = true
         }
     }
     
@@ -330,7 +329,7 @@ class ViewController: UIViewController {
         
         for btn in btnArray {
             
-            btn.enabled = false
+            btn.isEnabled = false
         }
     }
     
@@ -342,16 +341,10 @@ class ViewController: UIViewController {
         timerIsRunning = false
     }
     
-    func loadNextRoundWithDelay(seconds seconds: Int) {
+    func loadNextRoundWithDelay(seconds: Double) {
         
-        //Converts a delay in seconds to nanoseconds as signed 64 bit integer
-        let delay = Int64(NSEC_PER_SEC * UInt64(seconds))
-        
-        //Calculates a time value to execute the method given current time and delay
-        let dispatchTime = dispatch_time(DISPATCH_TIME_NOW, delay)
-        
-        //Executes the nextRound method at the dispatch time on the main queue
-        dispatch_after(dispatchTime, dispatch_get_main_queue()) {
+        //Executes the nextRound method after the given delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
             self.nextRound()
         }
     }
@@ -359,7 +352,7 @@ class ViewController: UIViewController {
     func loadGameSound(soundName: String, soundID: UnsafeMutablePointer<SystemSoundID>) {
         
         //Load sound
-        let pathToSoundFile = NSBundle.mainBundle().pathForResource(soundName, ofType: "wav")
+        let pathToSoundFile = Bundle.main.path(forResource: soundName, ofType: "wav")
         let soundPath = NSURL(fileURLWithPath: pathToSoundFile!)
         AudioServicesCreateSystemSoundID(soundPath, soundID)
     }
@@ -384,7 +377,7 @@ class ViewController: UIViewController {
     //-----------------------
     //MARK: Extra
     //-----------------------
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden: Bool {
         
         //Hides the status bar
         return true
