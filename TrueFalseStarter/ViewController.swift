@@ -377,9 +377,10 @@ class ViewController: UIViewController {
     //-----------------------
     //MARK: Extra
     //-----------------------
+    
+    //Hides the status bar
     override var prefersStatusBarHidden: Bool {
         
-        //Hides the status bar
         return true
     }
     
